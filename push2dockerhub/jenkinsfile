@@ -1,0 +1,37 @@
+pipeline{
+    agent any
+    environment{
+        DOCKERHUB_CREDENTIALS=credentials('dockerhub-creds')
+    }
+    stages {
+        
+        stage('Code Clone') {
+            steps {
+                git branch: 'main', credentialsId: 'nodejs-battleship', url: 'git@github.com:akbar-alam/nodejsBattleship.git'
+            }
+        }    
+        stage('Start Docker Build'){
+            steps{
+                sh 'docker build -t akbaralam96/nodejs-battleship:latest .'
+                sh 'docker images'
+            }
+        }
+
+        stage("Loging Into DockerHub"){
+            steps {
+                sh 'echo "Login Into DockerHub"'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('Pushing Image To DockerHub'){
+            steps{
+                sh 'docker push akbaralam96/nodejs-battleship:latest'
+            }
+        } 
+    }
+    post{
+        always{
+            sh 'docker logout'
+        }
+    }
+}
