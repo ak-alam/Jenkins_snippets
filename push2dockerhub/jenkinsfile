@@ -13,7 +13,6 @@ pipeline{
         stage('Start Docker Build'){
             steps{
                 sh 'docker build -t akbaralam96/nodejs-battleship:latest .'
-                sh 'docker images'
             }
         }
 
